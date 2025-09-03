@@ -1,0 +1,158 @@
+@font-face {
+  font-family: "DisketMono";
+  src: url(../assets/fonts/DisketMono/Disket-Mono-Regular.ttf);
+}
+
+:root {
+    --color-main:#57a3f3;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: "DisketMono";
+}
+
+.videoUploadArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.loadButton {
+  padding: 12px 24px;
+  background: var(--color-main);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.loadButton:hover:not(:disabled) {
+  background: #4c99eb;
+}
+
+.loadButton:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.wrapper {
+  position: relative;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wrapper video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.videoControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+.pauseBtn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.pauseBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.timeDisplay {
+  font-size: 14px;
+  min-width: 100px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #555;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.progressBar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-main);
+  cursor: pointer;
+}
+
+.progressBar::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-main);
+  cursor: pointer;
+  border: none;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.removeBtn:hover {
+  background: rgba(255, 0, 0, 0.2);
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingSpinner {
+  color: white;
+  font-size: 16px;
+}
+
+.error {
+  color: #dc3545;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-size: 14px;
+}

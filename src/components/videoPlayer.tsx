@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-// import './videoPlayer.module.css';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import styles from './videoPlayer.module.css';
 
 const VideoPlayer: React.FC = () => {
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
@@ -11,12 +11,39 @@ const VideoPlayer: React.FC = () => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isSeekingRef = useRef(false);
+  const animationFrameRef = useRef<number>(0);
+
+  const softUpdate = useCallback(() => {
+    const video = videoRef.current;
+    if (video == null || isSeekingRef.current) return;
+
+    setCurrentTime(prevTime => {
+        const currentTime = video.currentTime;
+        return Math.abs(prevTime - currentTime) > 0.1 ? currentTime : prevTime;
+    });
+    animationFrameRef.current = requestAnimationFrame(softUpdate)
+  }, []);
+  // нужно было плавное движение полосы прогресса
+  // было так: onTimeUpdate - handleTimeUpdate(currentTime) - re render
+
+  useEffect(() => {
+    if (isPlaying && !isSeekingRef.current) {
+        animationFrameRef.current = requestAnimationFrame(softUpdate);
+    } else {
+        cancelAnimationFrame(animationFrameRef.current);
+    }
+    return () => {
+        cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, [isPlaying, softUpdate]);
 
   useEffect(() => {
     return () => {
       if (videoSrc) {
         URL.revokeObjectURL(videoSrc);//очистка ресурсов
       }
+      cancelAnimationFrame(animationFrameRef.current);
     };
   }, [videoSrc]);
 
@@ -68,7 +95,7 @@ const VideoPlayer: React.FC = () => {
     if (!videoRef.current) return;
     
     if (videoRef.current.paused) {
-      videoRef.current.play().catch((err) => {
+      videoRef.current.play().catch((err: unknown) => {
         console.error('Player error', err);
         setError('Failed to play file');
       });
@@ -76,12 +103,6 @@ const VideoPlayer: React.FC = () => {
     } else {
       videoRef.current.pause();
       setIsPlaying(false);
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
     }
   };
 
@@ -116,7 +137,7 @@ const VideoPlayer: React.FC = () => {
 
   if (!videoSrc) {
     return (
-      <div className="video-player-container">
+      <div className={styles.container}>
         <input
           ref={fileInputRef}
           type="file"
@@ -125,49 +146,49 @@ const VideoPlayer: React.FC = () => {
           style={{ display: 'none' }}
         />
         
-        <div className="video-upload-area">
+        <div className={styles.videoUploadArea}>
           <button 
-            className="load-button"
+            className={styles.loadButton}
             onClick={handleLoadButtonClick}
             disabled={isLoading}
           >
             {isLoading ? 'loading..' : 'Load video'}
           </button>
           
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className={styles.error}>{error}</div>}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="video-player-container">
-      <div className="video-wrapper">
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
         <video
           ref={videoRef}
           src={videoSrc}
           onLoadedMetadata={handleVideoLoaded}
-          onTimeUpdate={handleTimeUpdate}
+        //   onTimeUpdate={handleTimeUpdate}
           onError={handleVideoError}
           onPause={() => {setIsPlaying(false)}}
           onPlay={() => { setIsPlaying(true); }}
         />
         
-        <div className="video-controls">
+        <div className={styles.videoControls}>
           <button 
-            className="play-pause-btn"
+            className={styles.pauseBtn}
             onClick={handlePlayPause}
           >
             {isPlaying ? '⏸️' : '▶️'}
           </button>
           
-          <div className="time-display">
+          <div className={styles.timeDisplay}>
             {formatTime(currentTime)} / {formatTime(duration)}
           </div>
           
           <input
             type="range"
-            className="progress-bar"
+            className={styles.progressBar}
             min="0"
             max={duration || 0}
             value={currentTime}
@@ -176,21 +197,21 @@ const VideoPlayer: React.FC = () => {
           />
           
           <button 
-            className="remove-btn"
+            className={styles.removeBtn}
             onClick={handleRemoveVideo}
             title="Remove video"
           >
-            Remove video
+            ✕
           </button>
         </div>
         
         {isLoading && (
-          <div className="loading-overlay">
-            <div className="loading-spinner">Загрузка...</div>
+          <div className={styles.loadingOverlay}>
+            <div className={styles.loadingSpinner}>...</div>
           </div>
         )}
         
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className={styles.error}>{error}</div>}
       </div>
     </div>
   );
