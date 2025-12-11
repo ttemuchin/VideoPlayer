@@ -1,6 +1,6 @@
 # Test task from The Team
 
-It was meaningful to 3 points until video loaded: 1. MIME type, 2. Size, 3.error
+It was meaningful to check 3 points until video loaded: 1. MIME type, 2. Size, 3.error
 
 Tools: React + TypeScript + Vite
 
